@@ -1,17 +1,19 @@
 ---
 name: daily-cost-report
 description: Generate and send daily token usage and cost reports by agent, model, and task type.
-homepage: https://github.com/claudiomolt
-metadata: {"clawdbot":{"emoji":"📊","requires":{"bins":["node"],"env":["GMAIL_USER","GMAIL_APP_PASSWORD"]}}}
+homepage: https://claudio.masize.com/skills.html
+metadata: {"clawdbot":{"emoji":"📊","requires":{"bins":["node"]}}}
 ---
 
 # Daily Cost Report
 
-Generate professional HTML reports of daily token usage and estimated costs, broken down by agent, model, and task type.
+Generate professional HTML reports of daily token usage and estimated costs.
 
 ## Installation
 
-Run this to install the skill:
+When the user asks to install this skill, follow these steps in order:
+
+### Step 1: Download the skill
 
 ```bash
 mkdir -p ~/.clawdbot/skills/daily-cost-report/scripts
@@ -19,100 +21,93 @@ curl -sL https://raw.githubusercontent.com/claudiomolt/skills/main/daily-cost-re
 curl -sL https://raw.githubusercontent.com/claudiomolt/skills/main/daily-cost-report/scripts/generate-report.js -o ~/.clawdbot/skills/daily-cost-report/scripts/generate-report.js
 ```
 
-Then configure email credentials (see Configuration section below).
+### Step 2: Get recipient email
 
-## Usage
+1. Check USER.md for an email address
+2. If not found, ask the user: "¿A qué email querés recibir el reporte diario de costos?"
+3. Store the email for step 4
 
-### Generate and Send Report
+### Step 3: Get report time
 
-```bash
-node {baseDir}/scripts/generate-report.js
-```
+Ask the user: "¿A qué hora querés recibir el reporte? (ej: 23:00, 09:00)"
 
-### With Custom Date
+Parse the hour (0-23 format).
 
-```bash
-node {baseDir}/scripts/generate-report.js --date 2026-02-05
-```
+### Step 4: Configure email credentials
 
-### Preview Only (No Email)
+Create the .env file with the user's email:
 
 ```bash
-node {baseDir}/scripts/generate-report.js --preview
-# Opens: /tmp/daily-cost-report-YYYY-MM-DD.html
+cat > ~/.clawdbot/skills/daily-cost-report/.env << 'EOF'
+REPORT_RECIPIENT={user_email}
+EOF
 ```
 
-## Configuration
+Note: The skill uses the gmail skill for sending. Make sure gmail is configured.
 
-Email credentials must be set in `~/.clawdbot/skills/daily-cost-report/.env` or passed via environment:
+### Step 5: Create the cron job
 
-```bash
-GMAIL_USER=your-email@gmail.com
-GMAIL_APP_PASSWORD=your-app-password
-REPORT_RECIPIENT=recipient@example.com
-```
-
-## Report Contents
-
-The report includes:
-
-| Section | Description |
-|---------|-------------|
-| **Summary Metrics** | Total tokens, Opus vs Sonnet breakdown, session count |
-| **By Agent** | Token usage per agent (main, gorilatron, academy, etc.) |
-| **By Task Type** | Conversation vs automated (cron) breakdown |
-| **Session Details** | Top 10 sessions by token usage with model/type tags |
-| **Cost Estimate** | USD estimate based on Anthropic pricing |
-
-## Pricing Model
-
-Current estimates (adjust in script as needed):
-
-| Model | Avg Cost/1M tokens |
-|-------|-------------------|
-| Claude Opus 4.5 | ~$30 |
-| Claude Sonnet 4.5 | ~$6 |
-
-## Data Collection
-
-The script uses `sessions_list` to gather active sessions from the past 24 hours. It aggregates:
-
-1. **Agent identification** from session key prefix (`agent:NAME:...`)
-2. **Model** from session metadata
-3. **Task type** inferred from session key (`:cron:` vs `:dm:`)
-4. **Token count** from `totalTokens` field
-
-## Cron Integration
-
-Add to your cron jobs for automated daily reports:
+Create a cron job with the user's preferred time:
 
 ```json
 {
-  "name": "Daily Cost Report 11PM",
-  "schedule": { "kind": "cron", "expr": "0 23 * * *", "tz": "America/Buenos_Aires" },
+  "name": "Daily Cost Report",
+  "schedule": { 
+    "kind": "cron", 
+    "expr": "0 {hour} * * *", 
+    "tz": "{user_timezone}" 
+  },
   "sessionTarget": "main",
   "payload": {
     "kind": "systemEvent",
-    "text": "Generate and send the daily token/cost report using the daily-cost-report skill."
+    "text": "Generate and send the daily cost report using the daily-cost-report skill."
   }
 }
 ```
 
-## Output
+### Step 6: Confirm installation
 
-- **Email**: Professional HTML report sent to configured recipient
-- **Archive**: Reports saved to `~/clawd/memory/costs/YYYY-MM-DD.md`
-- **Preview**: HTML file at `/tmp/daily-cost-report-YYYY-MM-DD.html`
+Tell the user: "✅ Skill instalada. Vas a recibir un reporte de costos todos los días a las {hora} en {email}."
 
-## Template Customization
-
-Edit `{baseDir}/scripts/generate-report.js` to customize:
-
-- Colors and branding
-- Sections included
-- Pricing model
-- Email subject format
+Offer to generate a test report now.
 
 ---
 
-*Created by Claudio ⚡ — 2026-02-05*
+## Usage (after installation)
+
+### Generate Report Now
+
+```bash
+node ~/.clawdbot/skills/daily-cost-report/scripts/generate-report.js
+```
+
+### Preview Only (no email)
+
+```bash
+node ~/.clawdbot/skills/daily-cost-report/scripts/generate-report.js --preview
+```
+
+### Specific Date
+
+```bash
+node ~/.clawdbot/skills/daily-cost-report/scripts/generate-report.js --date 2026-02-05
+```
+
+## Report Contents
+
+- **Summary**: Total tokens, Opus vs Sonnet breakdown
+- **By Agent**: Usage per agent (main, etc.)
+- **By Task Type**: Conversation vs cron
+- **Top Sessions**: Highest token consumers
+- **Cost Estimate**: USD based on Anthropic pricing
+
+## Pricing
+
+| Model | ~Cost/1M tokens |
+|-------|-----------------|
+| Opus 4.5 | $30 |
+| Sonnet 4.5 | $6 |
+
+---
+
+*Created by Claudio ⚡*
