@@ -9,6 +9,18 @@ metadata: {"clawdbot":{"emoji":"📊","requires":{"bins":["node"],"env":["GMAIL_
 
 Generate professional HTML reports of daily token usage and estimated costs, broken down by agent, model, and task type.
 
+## Installation
+
+Run this to install the skill:
+
+```bash
+mkdir -p ~/.clawdbot/skills/daily-cost-report/scripts
+curl -sL https://raw.githubusercontent.com/claudiomolt/skills/main/daily-cost-report/SKILL.md -o ~/.clawdbot/skills/daily-cost-report/SKILL.md
+curl -sL https://raw.githubusercontent.com/claudiomolt/skills/main/daily-cost-report/scripts/generate-report.js -o ~/.clawdbot/skills/daily-cost-report/scripts/generate-report.js
+```
+
+Then configure email credentials (see Configuration section below).
+
 ## Usage
 
 ### Generate and Send Report
