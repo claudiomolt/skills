@@ -31,6 +31,12 @@ SUPABASE_DISPENSER_API_KEY="sd_live_..." \
 supabase-dispenser list
 ```
 
+## Credential Modes
+
+- **User provides an API key**: save it with `supabase-dispenser setup --endpoint <url> --api-key <token>` or pass it as `SUPABASE_DISPENSER_API_KEY`. Use this for normal project work: create, list, start, stop, restart, archive, resources, logs, and connection strings.
+- **User provides Nostr admin access**: save an `nsec`/hex private key with `supabase-dispenser setup --endpoint <url> --nsec <nsec> --login`. Use this for admin-only tasks: creating dispenser API keys, saving a generated key locally, opening Studio launch links, managing admins, and changing settings.
+- **Create an API key from Nostr admin login**: run `supabase-dispenser api-key create "agent-name" --save`. This stores the returned key locally for future API-key mode use. The token is shown once by the server, so treat it as a secret.
+
 ## Common Commands
 
 ```bash
@@ -70,6 +76,7 @@ supabase-dispenser settings set --min-free-memory-mb 512
 
 1. If the user asks for a new database, run `supabase-dispenser create "<display name>"` and return the printed `SUPABASE_URL`, anon key, service role key, `DATABASE_URL`, and pooler URL.
 2. If setup is missing, ask the user for the endpoint URL and run `supabase-dispenser setup`. Do not use any remembered endpoint as a default.
-3. Use `--json` when the caller needs structured output.
-4. Treat `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, API keys, session cookies, and `nsec` values as secrets.
-5. For editing tables or managing the database visually, run `supabase-dispenser studio <project>` and give the user the returned launch URL.
+3. If the user provides an API key, use it directly. If the user provides Nostr admin credentials and asks for reusable access, create an API key with `supabase-dispenser api-key create "agent-name" --save`.
+4. Use `--json` when the caller needs structured output.
+5. Treat `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, API keys, session cookies, and `nsec` values as secrets.
+6. For editing tables or managing the database visually, run `supabase-dispenser studio <project>` and give the user the returned launch URL.

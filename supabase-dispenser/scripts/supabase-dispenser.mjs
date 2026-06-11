@@ -769,6 +769,11 @@ Setup:
   supabase-dispenser setup --endpoint <url> --api-key <token>
   supabase-dispenser setup --endpoint <url> --nsec <nsec> --login
 
+Credential modes:
+  Use --api-key, or SUPABASE_DISPENSER_API_KEY, for normal project operations.
+  Use --nsec to login as a Nostr admin, then create/save an API key:
+  supabase-dispenser api-key create "agent-name" --save
+
 Projects:
   supabase-dispenser create "Display Name" [--slug slug] [--stopped] [--json]
   supabase-dispenser list [--json]
