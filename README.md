@@ -7,6 +7,7 @@ Open source skills for [OpenClaw](https://github.com/openclaw/openclaw) agents.
 | Skill | Description | Status |
 |-------|-------------|--------|
 | [daily-cost-report](./daily-cost-report) | Daily token usage and cost reports by agent/model | ✅ Ready |
+| [supabase-dispenser](./supabase-dispenser) | Create and manage self-hosted Supabase projects on demand | ✅ Ready |
 
 ## Installation
 
