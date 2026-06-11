@@ -1,11 +1,11 @@
 ---
 name: supabase-dispenser
-description: Create, start, stop, inspect, and manage self-hosted Supabase Dispenser projects from any agent workspace. Use when the user needs a fresh Supabase database on demand, Supabase REST and Postgres connection strings, project lifecycle control, resource/settings checks, Studio access, API key generation, or Nostr admin login for a configured Supabase Dispenser endpoint.
+description: Create, start, stop, inspect, and manage self-hosted Supabase Dispenser database projects from any agent workspace. Use when the user needs a fresh Postgres database by default, an explicit Supabase stack, connection strings, project lifecycle control, resource/settings checks, Studio access, API key generation, or Nostr admin login for a configured Supabase Dispenser endpoint.
 ---
 
 # Supabase Dispenser
 
-Manage Supabase Dispenser projects with the bundled CLI. The skill is endpoint-agnostic: never assume a default endpoint, and never commit an endpoint, API key, nsec, cookie, or connection string into a repository.
+Manage Supabase Dispenser database projects with the bundled CLI. The skill is endpoint-agnostic: never assume a default endpoint, and never commit an endpoint, API key, nsec, cookie, or connection string into a repository. Postgres is the default database kind; use Supabase only when the task needs Supabase REST/auth/storage/Studio.
 
 ## First-Time Setup
 
@@ -40,8 +40,11 @@ supabase-dispenser list
 ## Common Commands
 
 ```bash
-# Create and start a project by display name; slug is derived unless --slug is supplied.
+# Create and start a Postgres project by display name; slug is derived unless --slug is supplied.
 supabase-dispenser create "Feature Preview"
+
+# Create and start a full Supabase stack.
+supabase-dispenser create "Feature Preview" --kind supabase
 
 # Create without starting.
 supabase-dispenser create "Feature Preview" --stopped
@@ -74,9 +77,10 @@ supabase-dispenser settings set --min-free-memory-mb 512
 
 ## Agent Workflow
 
-1. If the user asks for a new database, run `supabase-dispenser create "<display name>"` and return the printed `SUPABASE_URL`, anon key, service role key, `DATABASE_URL`, and pooler URL.
+1. If the user asks for a new database, create Postgres by default with `supabase-dispenser create "<display name>"`. Use `--kind supabase` only when the user asks for Supabase features.
 2. If setup is missing, ask the user for the endpoint URL and run `supabase-dispenser setup`. Do not use any remembered endpoint as a default.
 3. If the user provides an API key, use it directly. If the user provides Nostr admin credentials and asks for reusable access, create an API key with `supabase-dispenser api-key create "agent-name" --save`.
-4. Use `--json` when the caller needs structured output.
-5. Treat `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, API keys, session cookies, and `nsec` values as secrets.
-6. For editing tables or managing the database visually, run `supabase-dispenser studio <project>` and give the user the returned launch URL.
+4. Return `DATABASE_URL` for Postgres projects. For Supabase projects, also return `SUPABASE_URL`, anon key, service role key, pooler URL, and Studio URL when present.
+5. Use `--json` when the caller needs structured output.
+6. Treat `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, API keys, session cookies, and `nsec` values as secrets.
+7. For editing tables or managing the database visually, run `supabase-dispenser studio <project>` only for Supabase projects; use `supabase-dispenser database` and `supabase-dispenser table` for either kind.

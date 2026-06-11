@@ -130,12 +130,14 @@ async function createCommand(args) {
   const config = requireEndpoint(loadConfig());
   const name = stringFlag(args, "name") || args.positionals.join(" ").trim();
   const slug = stringFlag(args, "slug") || (name ? slugFromName(name) : "");
+  const kind = stringFlag(args, "kind") || "postgres";
+  if (!["postgres", "supabase"].includes(kind)) throw new Error("Expected --kind postgres or --kind supabase.");
   if (!slug) throw new Error("Missing project name or --slug.");
   const start = hasFlag(args, "stopped") || hasFlag(args, "no-start") ? false : true;
   const created = await apiRequest(config, "/api/projects", {
     method: "POST",
     auth: "any",
-    body: { slug, name: name || slug, start }
+    body: { slug, name: name || slug, kind, start }
   });
   const projectId = created.project?.id || created.project?.slug || slug;
   const connections = await apiRequest(config, `/api/projects/${encodeURIComponent(projectId)}/connection-strings`, { auth: "any" });
@@ -775,7 +777,7 @@ Credential modes:
   supabase-dispenser api-key create "agent-name" --save
 
 Projects:
-  supabase-dispenser create "Display Name" [--slug slug] [--stopped] [--json]
+  supabase-dispenser create "Display Name" [--kind postgres|supabase] [--slug slug] [--stopped] [--json]
   supabase-dispenser list [--json]
   supabase-dispenser connections <project> [--json]
   supabase-dispenser start|stop|restart <project>
