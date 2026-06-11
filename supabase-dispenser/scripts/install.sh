@@ -53,7 +53,7 @@ copy_skill() {
   rm -rf "$target"
   mkdir -p "$target"
   tar -C "$source_dir" -cf - . | tar -C "$target" -xf -
-  chmod +x "$target/scripts/supabase-dispenser.mjs" "$target/scripts/install.sh"
+  chmod +x "$target/scripts/supabase-dispenser.mjs" "$target/scripts/supabase-dispenser-mcp.mjs" "$target/scripts/install.sh"
   echo "Installed skill: $target"
 }
 
@@ -71,6 +71,14 @@ exec node "$primary/scripts/supabase-dispenser.mjs" "\$@"
 EOF
   chmod +x "$wrapper"
   echo "Installed CLI: $wrapper"
+
+  mcp_wrapper="$bin_dir/supabase-dispenser-mcp"
+  cat > "$mcp_wrapper" <<EOF
+#!/usr/bin/env bash
+exec node "$primary/scripts/supabase-dispenser-mcp.mjs" "\$@"
+EOF
+  chmod +x "$mcp_wrapper"
+  echo "Installed MCP server: $mcp_wrapper"
 fi
 
 echo

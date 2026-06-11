@@ -1,4 +1,4 @@
 interface:
   display_name: "Supabase Dispenser"
-  short_description: "Create and control dispenser databases"
-  default_prompt: "Use $supabase-dispenser to create a fresh Postgres database and return its connection variables."
+  short_description: "Create databases via CLI or MCP"
+  default_prompt: "Use $supabase-dispenser to create a fresh Postgres database through the CLI or MCP server and return its connection variables."

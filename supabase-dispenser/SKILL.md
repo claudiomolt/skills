@@ -1,6 +1,6 @@
 ---
 name: supabase-dispenser
-description: Create, start, stop, inspect, and manage self-hosted Supabase Dispenser database projects from any agent workspace. Use when the user needs a fresh Postgres database by default, an explicit Supabase stack, connection strings, project lifecycle control, resource/settings checks, Studio access, API key generation, or Nostr admin login for a configured Supabase Dispenser endpoint.
+description: Create, start, stop, inspect, and manage self-hosted Supabase Dispenser database projects from any agent workspace through CLI or MCP tools. Use when the user needs a fresh Postgres database by default, an explicit Supabase stack, connection strings, project lifecycle control, resource/settings checks, Studio access, API key generation, Nostr admin login, or an MCP server for a configured Supabase Dispenser endpoint.
 ---
 
 # Supabase Dispenser
@@ -73,6 +73,30 @@ supabase-dispenser studio <project>
 supabase-dispenser api-key create "codex-agent" --save
 supabase-dispenser admins add name@example.com
 supabase-dispenser settings set --min-free-memory-mb 512
+```
+
+## MCP Server
+
+Install also creates a stdio MCP server wrapper:
+
+```bash
+supabase-dispenser-mcp
+```
+
+Configure MCP clients to run that command. The server uses the same local config and environment variables as the CLI, so run `supabase-dispenser setup` first or provide `SUPABASE_DISPENSER_URL` and `SUPABASE_DISPENSER_API_KEY` in the MCP environment.
+
+The MCP exposes tools for configuration, health, project create/list/start/stop/restart/archive, connection strings, resources, logs, database/table inspection, Studio links, admin allowlist management, settings, and API key creation. Postgres is still the default kind for `dispenser_create_project`; pass `kind: "supabase"` when a full Supabase stack is needed.
+
+Example MCP config:
+
+```json
+{
+  "mcpServers": {
+    "supabase-dispenser": {
+      "command": "supabase-dispenser-mcp"
+    }
+  }
+}
 ```
 
 ## Agent Workflow
