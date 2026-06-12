@@ -135,10 +135,11 @@ async function createCommand(args) {
   if (!slug) throw new Error("Missing project name or --slug.");
   const start = hasFlag(args, "stopped") || hasFlag(args, "no-start") ? false : true;
   const pgbouncer = hasFlag(args, "pgbouncer") || hasFlag(args, "pooler");
+  const sourceDatabaseUrl = stringFlag(args, "migrate-from") || stringFlag(args, "source-url");
   const created = await apiRequest(config, "/api/projects", {
     method: "POST",
     auth: "any",
-    body: { slug, name: name || slug, kind, start, pgbouncer }
+    body: { slug, name: name || slug, kind, start, pgbouncer, sourceDatabaseUrl }
   });
   const projectId = created.project?.id || created.project?.slug || slug;
   const connections = await apiRequest(config, `/api/projects/${encodeURIComponent(projectId)}/connection-strings`, { auth: "any" });
@@ -781,7 +782,7 @@ Credential modes:
   supabase-dispenser api-key create "agent-name" --save
 
 Projects:
-  supabase-dispenser create "Display Name" [--kind postgres|supabase] [--slug slug] [--pgbouncer] [--stopped] [--json]
+  supabase-dispenser create "Display Name" [--kind postgres|supabase] [--slug slug] [--pgbouncer] [--migrate-from uri] [--stopped] [--json]
   supabase-dispenser list [--json]
   supabase-dispenser connections <project> [--json]
   supabase-dispenser start|stop|restart <project>
