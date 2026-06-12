@@ -39,6 +39,8 @@ const TOOLS = [
       name: { type: "string", description: "Display name used to derive the slug when slug is omitted." },
       slug: { type: "string", description: "Optional lowercase project slug." },
       kind: { type: "string", enum: ["postgres", "supabase"], description: "Database kind. Defaults to postgres." },
+      pgbouncer: { type: "boolean", description: "For Postgres projects, enable a PgBouncer transaction pooler." },
+      sourceDatabaseUrl: { type: "string", description: "Optional postgres:// or postgresql:// URI to clone into the new project." },
       start: { type: "boolean", description: "Start immediately. Defaults to true." }
     }, ["name"])
   },
@@ -240,7 +242,7 @@ async function runTool(name, args) {
     case "dispenser_list_projects":
       return cli(["list", "--json"]);
     case "dispenser_create_project":
-      return cli(["create", required(args.name, "name"), "--kind", args.kind || "postgres", ...flag("--slug", args.slug), ...(args.start === false ? ["--stopped"] : []), "--json"]);
+      return cli(["create", required(args.name, "name"), "--kind", args.kind || "postgres", ...flag("--slug", args.slug), ...(args.pgbouncer ? ["--pgbouncer"] : []), ...flag("--migrate-from", args.sourceDatabaseUrl), ...(args.start === false ? ["--stopped"] : []), "--json"]);
     case "dispenser_get_connections":
       return cli(["connections", required(args.project, "project"), "--json"]);
     case "dispenser_start_project":

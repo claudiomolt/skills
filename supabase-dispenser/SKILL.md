@@ -43,6 +43,12 @@ supabase-dispenser list
 # Create and start a Postgres project by display name; slug is derived unless --slug is supplied.
 supabase-dispenser create "Feature Preview"
 
+# Create and start Postgres with PgBouncer transaction pooling.
+supabase-dispenser create "Feature Preview" --pgbouncer
+
+# Create and clone from an existing Postgres or Supabase database URI.
+supabase-dispenser create "Feature Preview" --migrate-from "postgresql://user:password@host:5432/database"
+
 # Create and start a full Supabase stack.
 supabase-dispenser create "Feature Preview" --kind supabase
 
@@ -104,7 +110,7 @@ Example MCP config:
 1. If the user asks for a new database, create Postgres by default with `supabase-dispenser create "<display name>"`. Use `--kind supabase` only when the user asks for Supabase features.
 2. If setup is missing, ask the user for the endpoint URL and run `supabase-dispenser setup`. Do not use any remembered endpoint as a default.
 3. If the user provides an API key, use it directly. If the user provides Nostr admin credentials and asks for reusable access, create an API key with `supabase-dispenser api-key create "agent-name" --save`.
-4. Return `DATABASE_URL` for Postgres projects. For Supabase projects, also return `SUPABASE_URL`, anon key, service role key, pooler URL, and Studio URL when present.
+4. Return `DATABASE_URL` for Postgres projects, plus `DATABASE_POOL_URL` when PgBouncer is enabled. For migrations, use `--migrate-from <postgres-uri>` or MCP `sourceDatabaseUrl`; never echo the source URI back. For Supabase projects, also return `SUPABASE_URL`, anon key, service role key, pooler URL, and Studio URL when present.
 5. Use `--json` when the caller needs structured output.
 6. Treat `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, API keys, session cookies, and `nsec` values as secrets.
 7. For editing tables or managing the database visually, run `supabase-dispenser studio <project>` only for Supabase projects; use `supabase-dispenser database` and `supabase-dispenser table` for either kind.

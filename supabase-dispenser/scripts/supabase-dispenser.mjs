@@ -134,10 +134,12 @@ async function createCommand(args) {
   if (!["postgres", "supabase"].includes(kind)) throw new Error("Expected --kind postgres or --kind supabase.");
   if (!slug) throw new Error("Missing project name or --slug.");
   const start = hasFlag(args, "stopped") || hasFlag(args, "no-start") ? false : true;
+  const pgbouncer = hasFlag(args, "pgbouncer") || hasFlag(args, "pooler");
+  const sourceDatabaseUrl = stringFlag(args, "migrate-from") || stringFlag(args, "source-url");
   const created = await apiRequest(config, "/api/projects", {
     method: "POST",
     auth: "any",
-    body: { slug, name: name || slug, kind, start }
+    body: { slug, name: name || slug, kind, start, pgbouncer, sourceDatabaseUrl }
   });
   const projectId = created.project?.id || created.project?.slug || slug;
   const connections = await apiRequest(config, `/api/projects/${encodeURIComponent(projectId)}/connection-strings`, { auth: "any" });
@@ -678,11 +680,14 @@ function printEnv(connections) {
     supabaseAnonKey: "SUPABASE_ANON_KEY",
     supabaseServiceRoleKey: "SUPABASE_SERVICE_ROLE_KEY",
     databaseUrl: "DATABASE_URL",
-    poolerUrl: "POOLER_URL",
     studioUrl: "STUDIO_URL"
   };
   for (const [key, envName] of Object.entries(mapping)) {
     if (connections?.[key]) console.log(`${envName}=${shellQuote(connections[key])}`);
+  }
+  if (connections?.poolerUrl) {
+    console.log(`DATABASE_POOL_URL=${shellQuote(connections.poolerUrl)}`);
+    console.log(`POOLER_URL=${shellQuote(connections.poolerUrl)}`);
   }
 }
 
@@ -777,7 +782,7 @@ Credential modes:
   supabase-dispenser api-key create "agent-name" --save
 
 Projects:
-  supabase-dispenser create "Display Name" [--kind postgres|supabase] [--slug slug] [--stopped] [--json]
+  supabase-dispenser create "Display Name" [--kind postgres|supabase] [--slug slug] [--pgbouncer] [--migrate-from uri] [--stopped] [--json]
   supabase-dispenser list [--json]
   supabase-dispenser connections <project> [--json]
   supabase-dispenser start|stop|restart <project>
