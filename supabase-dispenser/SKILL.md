@@ -9,10 +9,24 @@ Manage Supabase Dispenser database projects with the bundled CLI. The skill is e
 
 ## First-Time Setup
 
-Install globally from a checkout of this skill repository:
+Install globally into Claude Code and Codex with the Skills CLI:
 
 ```bash
-bash {baseDir}/scripts/install.sh
+npx skills add claudiomolt/skills \
+  --skill supabase-dispenser \
+  --global \
+  --agent claude-code codex \
+  --copy \
+  --yes
+```
+
+When installing from a checkout of this skill repository, use the bundled
+installer. It copies the skill into both `~/.codex/skills` and
+`~/.claude/skills` and creates the `supabase-dispenser` and
+`supabase-dispenser-mcp` wrappers:
+
+```bash
+bash {baseDir}/scripts/install.sh --codex --claude
 ```
 
 Then configure once. Ask the user for the endpoint URL when it is not already configured; do not suggest or fill a default endpoint.

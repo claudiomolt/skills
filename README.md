@@ -1,6 +1,7 @@
 # ⚡ Claudio Skills
 
-Open source skills for [OpenClaw](https://github.com/openclaw/openclaw) agents.
+Open source skills for AI coding agents, including Claude Code, Codex, and
+[OpenClaw](https://github.com/openclaw/openclaw).
 
 ## Available Skills
 
@@ -10,6 +11,25 @@ Open source skills for [OpenClaw](https://github.com/openclaw/openclaw) agents.
 | [supabase-dispenser](./supabase-dispenser) | Create and manage dispenser databases via CLI or MCP | ✅ Ready |
 
 ## Installation
+
+### Skills.sh
+
+Install Supabase Dispenser globally into Claude Code and Codex:
+
+```bash
+npx skills add claudiomolt/skills \
+  --skill supabase-dispenser \
+  --global \
+  --agent claude-code codex \
+  --copy \
+  --yes
+```
+
+After installation, configure the endpoint once:
+
+```bash
+supabase-dispenser setup
+```
 
 ### For Agents
 

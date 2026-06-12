@@ -1,0 +1,11 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Databases",
+      "description": "Skills for provisioning and managing database projects from coding agents.",
+      "skills": ["supabase-dispenser"]
+    }
+  ]
+}
